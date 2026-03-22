@@ -1,0 +1,76 @@
+version: "3.9"
+
+# ==========================================================
+#  AttendX — Docker Compose
+#
+#  Usage:
+#    docker compose up --build          # First run
+#    docker compose up -d               # Background
+#    docker compose down                # Stop
+#    docker compose logs -f attendx     # View logs
+# ==========================================================
+
+services:
+  attendx:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      # Cache the dlib compile layer aggressively
+      target: runtime
+
+    image: attendx:2.0
+    container_name: attendx_app
+
+    ports:
+      - "8000:8000"         # http://localhost:8000
+
+    volumes:
+      # ── Persistent data (Excel files) ──────────────────
+      # Files written here survive container restarts
+      - attendx_data:/app/data
+
+      # ── Firebase credentials ────────────────────────────
+      # Mount your serviceAccountKey.json from the host.
+      # IMPORTANT: Never bake this into the Docker image!
+      - ./serviceAccountKey.json:/app/creds/serviceAccountKey.json:ro
+
+      # ── Registered face photos (optional persistence) ──
+      - attendx_faces:/app/registered_faces
+
+    environment:
+      # Override where Excel files are written
+      - ATTENDX_DATA_DIR=/app/data
+      # Firebase credentials path (already set in Dockerfile,
+      # but explicit here for clarity)
+      - GOOGLE_APPLICATION_CREDENTIALS=/app/creds/serviceAccountKey.json
+      # Admin credentials (override defaults if needed)
+      - ADMIN_USERNAME=Admin
+      - ADMIN_PASSWORD=Pass@123
+
+    restart: unless-stopped
+
+    healthcheck:
+      test: ["CMD", "python", "-c",
+             "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/attendance')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 25s
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+# ==========================================================
+#  Named Volumes
+# ==========================================================
+volumes:
+  attendx_data:
+    driver: local
+    # To back up: docker run --rm -v attendx_data:/data -v $(pwd):/backup \
+    #             alpine tar czf /backup/attendx_data_backup.tar.gz /data
+
+  attendx_faces:
+    driver: local

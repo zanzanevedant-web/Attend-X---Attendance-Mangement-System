@@ -1,0 +1,49 @@
+# =============================================
+#  AttendX — Docker Build Context Exclusions
+#  Keeps the build context small and secure
+# =============================================
+
+# Python virtual environment (huge, not needed — Docker installs its own)
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+*.pyo
+.Python
+
+# Secrets — NEVER copy into image
+serviceAccountKey.json
+*.pem
+*.key
+.env
+.env.*
+
+# Git internals
+.git/
+.gitignore
+
+# Generated data (mounted as volumes at runtime)
+Attendance.xlsx
+Students.xlsx
+registered_faces/
+
+# Reference repo & wheels
+reference_repo/
+*.whl
+
+# IDE & OS files
+.vscode/
+.idea/
+*.suo
+*.user
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+logs/
+
+# Docs (not needed in container)
+README.md
+KNOWLEDGE.md

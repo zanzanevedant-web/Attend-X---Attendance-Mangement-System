@@ -13,11 +13,15 @@ from firebase_utils import init_firebase, get_db
 from face_utils import get_face_encoding, match_face
 
 # --- Config ---
-ADMIN_USERNAME = "Admin"
-ADMIN_PASSWORD = "Pass@123"
+# Admin credentials — override via environment variables or docker-compose
+ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME", "Admin")
+ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "Pass@123")
+
+# Base directory — use ATTENDX_DATA_DIR if set (Docker volume), else project root
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-ATTENDANCE_EXCEL = os.path.join(BASE_DIR, "Attendance.xlsx")
-STUDENTS_EXCEL = os.path.join(BASE_DIR, "Students.xlsx")
+DATA_DIR = os.environ.get("ATTENDX_DATA_DIR", BASE_DIR)
+ATTENDANCE_EXCEL = os.path.join(DATA_DIR, "Attendance.xlsx")
+STUDENTS_EXCEL = os.path.join(DATA_DIR, "Students.xlsx")
 
 # Simple token store (in-memory, resets on restart)
 admin_tokens = set()
