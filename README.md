@@ -47,37 +47,48 @@ AttendX/
 
 ## ⚙️ Setup & Run
 
-### 1. Prerequisites
-- Python 3.10
-- A Firebase project with Firestore enabled
-- A `serviceAccountKey.json` (place in project root)
+### Method 1: The Recommended Way (Using Docker for ANY PC)
+Since the `dlib` library and facial recognition dependencies can be tedious to compile on Windows/Linux, using Docker is the fastest and most reliable way to run AttendX on **another PC**.
 
-### 2. Create Virtual Environment
+**1. Prerequisites:**
+- Install [Docker Desktop](https://www.docker.com/products/docker-desktop/).
+- Place your `serviceAccountKey.json` inside the base project folder (Firebase credentials).
+
+**2. Build and Run:**
+Open your terminal in the project directory and run:
 ```powershell
-cd c:\Project\AttendX
+docker-compose up --build
+```
+> *This will automatically download the required Debian environment, compile `dlib` from scratch, install all Python dependencies, and mount your local directories so your Excel sheets save locally to your PC!*
+
+**3. Open in Browser:**
+Navigate to `http://localhost:8000`
+
+---
+
+### Method 2: Manual Local Setup (Without Docker)
+
+**1. Prerequisites:**
+- Python 3.10
+- A `serviceAccountKey.json` file in the project folder.
+
+**2. Virtual Environment:**
+```powershell
 python -m venv venv
 .\venv\Scripts\Activate.ps1
 ```
 
-### 3. Install Dependencies
+**3. Install Dependencies:**
 ```powershell
 pip install -r requirements.txt
 ```
+> **Note for Windows users:** You might need to install `dlib` manually via a wheel if pip fails to build it from source:
+> `pip install dlib-19.22.99-cp310-cp310-win_amd64.whl`
 
-> **Note:** `dlib` is installed from the local `.whl` file:
-> ```powershell
-> pip install dlib-19.22.99-cp310-cp310-win_amd64.whl
-> ```
-
-### 4. Start the Server
+**4. Start the Server:**
 ```powershell
 cd server
 ..\venv\Scripts\python.exe -m uvicorn main:app --host 0.0.0.0 --port 8000 --reload
-```
-
-### 5. Open in Browser
-```
-http://localhost:8000
 ```
 
 ---
@@ -111,18 +122,18 @@ http://localhost:8000
 
 ## 🐍 Dependencies (`requirements.txt`)
 
-```
-fastapi
-uvicorn
-pandas
-openpyxl
-numpy
-opencv-python-headless
-face_recognition
-Pillow
-firebase-admin
-google-cloud-firestore
-python-multipart
+```text
+fastapi==0.110.0
+uvicorn[standard]==0.29.0
+python-multipart==0.0.9
+pandas==2.2.1
+openpyxl==3.1.2
+numpy==1.26.4
+opencv-python-headless==4.9.0.80
+face_recognition==1.3.0
+Pillow==10.3.0
+firebase-admin==6.5.0
+google-cloud-firestore==2.16.0
 ```
 
 ---

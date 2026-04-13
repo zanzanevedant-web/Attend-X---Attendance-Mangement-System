@@ -41,8 +41,8 @@ RUN pip install --upgrade pip wheel setuptools
 RUN pip install --no-cache-dir dlib==19.24.2
 
 # Install all remaining Python dependencies
-COPY requirements.docker.txt .
-RUN pip install --no-cache-dir -r requirements.docker.txt
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
 
 # ── Stage 2: Runtime ─────────────────────────────────────
